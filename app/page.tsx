@@ -26,7 +26,7 @@ const HomePage = () => {
   const [sub, setSub] = useState<PushSubscription | null>(null);
   const [title, setTitle] = useState('Stripe');
   const [body, setBody] = useState('You received a payment of $50 from {{ email }}');
-  const [icon, setIcon] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbrcXXjNUXtyVEFH-YU9svTfDsySwWvPx9ig&s');
+  const [badge, setBadge] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbrcXXjNUXtyVEFH-YU9svTfDsySwWvPx9ig&s');
   const [url, setUrl] = useState('https://selimmersive.com');
   const [intervalValue, setIntervalValue] = useState(5);
   const [intervalUnit, setIntervalUnit] = useState('seconds');
@@ -116,7 +116,7 @@ const HomePage = () => {
             body: JSON.stringify({
               title,
               body: messageBody,
-              icon,
+              badge,
               url,
               subscription: sub
             })
@@ -153,8 +153,8 @@ const HomePage = () => {
         <Input 
           type="text" 
           placeholder="Icon URL" 
-          value={icon} 
-          onChange={(e) => setIcon(e.target.value)} 
+          value={badge} 
+          onChange={(e) => setBadge(e.target.value)} 
         />
       </div>
       <div className='space-y-2'>
