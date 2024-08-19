@@ -3,6 +3,7 @@ self.addEventListener('push', (event) => {
   const options = {
     body: data.body,
     icon: data.icon,
+    badge: data.badge,
     data: {
       url: data.url,
     },
