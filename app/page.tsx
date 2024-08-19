@@ -119,9 +119,9 @@ const HomePage = () => {
             body: JSON.stringify({
               title,
               body: messageBody,
-              icon: "/stripe.png",
+              icon: "/transparent.png",
               url,
-              image: "/transparent.png",
+              badge: "/stripe.png",
               subscription: sub
             })
           });
@@ -138,6 +138,11 @@ const HomePage = () => {
       await subscribe();
     } else {
       await unsubscribe();
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      setNotificationsEnabled(false);
     }
     setIsEnablingNotifications(false);
   };
