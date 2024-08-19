@@ -26,11 +26,13 @@ const HomePage = () => {
   const [sub, setSub] = useState<PushSubscription | null>(null);
   const [title, setTitle] = useState('Stripe');
   const [body, setBody] = useState('You received a payment of $50 from {{ email }}');
-  const [badge, setBadge] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbrcXXjNUXtyVEFH-YU9svTfDsySwWvPx9ig&s');
+  /* const [badge, setBadge] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbrcXXjNUXtyVEFH-YU9svTfDsySwWvPx9ig&s'); */
   const [url, setUrl] = useState('https://selimmersive.com');
   const [intervalValue, setIntervalValue] = useState(5);
   const [intervalUnit, setIntervalUnit] = useState('seconds');
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [isEnablingNotifications, setIsEnablingNotifications] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const vapidPublic = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   
@@ -55,6 +57,7 @@ const HomePage = () => {
   }, [notificationsEnabled]);
 
   const subscribe = async () => {
+    setIsSubscribing(true);
     const registration = await navigator.serviceWorker.ready;
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
@@ -70,9 +73,11 @@ const HomePage = () => {
       body: JSON.stringify(subscription)
     });
     setSub(subscription);
+    setIsSubscribing(false);
   };
 
   const unsubscribe = async () => {
+    setIsSubscribing(true);
     if (sub) {
       const registration = await navigator.serviceWorker.ready;
       await registration.pushManager.getSubscription().then(subscription => {
@@ -86,22 +91,20 @@ const HomePage = () => {
         }
       });
     }
+    setIsSubscribing(false);
   };
 
-  const handleSwitchChange =  async (checked: boolean) => {
+  const handleNotificationSwitchChange = async (checked: boolean) => {
+    setIsEnablingNotifications(true);
     if (!checked) {
       // Disable notifications
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-      await unsubscribe();
       setNotificationsEnabled(false);
     } else {
       // Enable notifications
-      if (!sub) {
-        await subscribe();
-      }
       if (sub) {
         const interval = intervalUnit === 'seconds' ? intervalValue * 1000 : intervalValue * 60000;
         intervalRef.current = setInterval(async () => {
@@ -116,8 +119,9 @@ const HomePage = () => {
             body: JSON.stringify({
               title,
               body: messageBody,
-              badge,
+              icon: "/stripe.png",
               url,
+              image: "/transparent.png",
               subscription: sub
             })
           });
@@ -125,6 +129,17 @@ const HomePage = () => {
         setNotificationsEnabled(true);
       }
     }
+    setIsEnablingNotifications(false);
+  };
+
+  const handleSubscriptionSwitchChange = async (checked: boolean) => {
+    setIsEnablingNotifications(true);
+    if (checked) {
+      await subscribe();
+    } else {
+      await unsubscribe();
+    }
+    setIsEnablingNotifications(false);
   };
 
   return (
@@ -148,7 +163,7 @@ const HomePage = () => {
           onChange={(e) => setBody(e.target.value)} 
         />
       </div>
-      <div className='space-y-2'>
+      {/* <div className='space-y-2'>
         <Label>Icone</Label>
         <Input 
           type="text" 
@@ -156,7 +171,7 @@ const HomePage = () => {
           value={badge} 
           onChange={(e) => setBadge(e.target.value)} 
         />
-      </div>
+      </div> */}
       <div className='space-y-2'>
         <Label>Url</Label>
         <Input 
@@ -187,8 +202,20 @@ const HomePage = () => {
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <Switch checked={notificationsEnabled} onCheckedChange={handleSwitchChange} />
-        <Label>{notificationsEnabled ? "Désactiver" : "Activer" } les notifications</Label>
+        <Switch 
+          checked={sub !== null} 
+          onCheckedChange={handleSubscriptionSwitchChange} 
+          disabled={isSubscribing || isEnablingNotifications}
+        />
+        <Label>{sub ? "Désactiver la souscription" : "Souscrire"} aux notifications</Label>
+      </div>
+      <div className="flex items-center gap-4">
+        <Switch 
+          checked={notificationsEnabled} 
+          onCheckedChange={handleNotificationSwitchChange} 
+          disabled={isSubscribing || isEnablingNotifications || !sub}
+        />
+        <Label>{notificationsEnabled ? "Désactiver" : "Activer"} les notifications</Label>
       </div>
     </div>
   );

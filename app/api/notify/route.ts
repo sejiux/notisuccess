@@ -9,12 +9,13 @@ webPush.setVapidDetails(
 
 export async function POST(req: NextRequest) {
   try {
-  const { title, body, badge, url, subscription } = await req.json();
+  const { title, body, icon, image, url, subscription } = await req.json();
 
   const notificationPayload = {
       title,
       body,
-      badge,
+      icon,
+      image,
       url
   };
   
