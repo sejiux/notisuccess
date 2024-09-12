@@ -148,7 +148,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className='flex flex-col space-y-6 px-8'>
+    <div className='flex flex-col space-y-6 px-8 max-w-lg mx-auto pt-4'>
       <h1 className='pt-10 text-xl font-medium'>Notisuccess</h1>
       <div className='space-y-2'>
         <Label>Titre</Label>
