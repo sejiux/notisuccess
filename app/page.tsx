@@ -27,7 +27,7 @@ const HomePage = () => {
   const [title, setTitle] = useState('Stripe');
   const [body, setBody] = useState('You received a payment of $50 from {{ email }}');
   /* const [badge, setBadge] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbrcXXjNUXtyVEFH-YU9svTfDsySwWvPx9ig&s'); */
-  const [url, setUrl] = useState('https://selimmersive.com');
+  const [url, setUrl] = useState('https://sejiux.com');
   const [intervalValue, setIntervalValue] = useState(5);
   const [intervalUnit, setIntervalUnit] = useState('seconds');
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
